@@ -1,0 +1,80 @@
+{
+  "posts": [
+    {
+      "id": "11",
+      "title": "DB First Post!",
+      "content": "Hello1111!",
+      "user": "1",
+      "date": "2022-11-01T05:39:02.790Z",
+      "reactionsCount": {
+        "thumbsUp": 0,
+        "hooray": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      }
+    },
+    {
+      "id": "21",
+      "title": "DB seconds Post!",
+      "content": "Hello2222!",
+      "user": "2",
+      "date": "2022-10-31T08:46:22.587Z",
+      "reactionsCount": {
+        "thumbsUp": 0,
+        "hooray": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      }
+    },
+    {
+      "id": "13",
+      "title": "DB 3rd Post!",
+      "content": "Hello133333!",
+      "user": "3",
+      "date": "2022-11-01T05:39:02.790Z",
+      "reactionsCount": {
+        "thumbsUp": 0,
+        "hooray": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      }
+    },
+    {
+      "title": "123",
+      "content": "c",
+      "user": "1",
+      "date": "2022-11-03T01:58:28.459Z",
+      "reactionsCount": {
+        "thumbsUp": 0,
+        "hooray": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "id": "-eO0yUS"
+    },
+    {
+      "title": "112331",
+      "content": "saaazzxcvxcvzxcv",
+      "user": "1",
+      "date": "2022-11-03T01:58:36.815Z",
+      "reactionsCount": {
+        "thumbsUp": 0,
+        "hooray": 0,
+        "heart": 0,
+        "rocket": 0,
+        "eyes": 0
+      },
+      "id": "V0Gl-Zw"
+    }
+  ],
+  "users": [
+    { "id": "0", "name": "Tianna Jenkins" },
+    { "id": "1", "name": "Kevin Grant" },
+    { "id": "2", "name": "Madison Price" },
+    { "id": "13", "name": "Lincoln yang"}
+  ]
+}

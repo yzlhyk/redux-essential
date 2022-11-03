@@ -9,6 +9,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { SinglePostPage } from "./features/posts/SinglePostPage";
 import { AddPostForm } from "./features/posts/AddPostForm";
 import PostsList from "./features/posts/PostsList";
+import { EditPostForm } from "./features/posts/EditPostForm";
+import { UsersList } from "./features/users/UsersList";
+import { UserPage } from "./features/users/UserPage";
 
 const container = document.getElementById("root")!;
 
@@ -20,27 +23,37 @@ const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <React.Fragment>
+          <>
             <AddPostForm />
             <PostsList />
-          </React.Fragment>
+          </>
         ),
       },
       {
         path: "posts/:postId",
         element: <SinglePostPage />,
       },
+      {
+        path: "/editPost/:postId",
+        element: <EditPostForm />
+      },
+      {
+        path: "users",
+        element: <UsersList />
+      },
+      {
+        path: "users/:userId",
+        element: <UserPage />
+      }
     ],
   },
 ]);
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
