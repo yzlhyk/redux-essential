@@ -2,14 +2,10 @@ import {
   createAsyncThunk,
   createSelector,
   createSlice,
-  nanoid,
-  PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
 import { RootState } from "../../app/store";
 import { client } from "../../api/client";
-import { b } from "msw/lib/glossary-dc3fd077";
 export interface IEmoji {
   [index: string]: number;
 }
@@ -22,10 +18,6 @@ export interface Post {
   reactionsCount: IEmoji;
 }
 
-// export interface PostState {
-//   status: DataStatus;
-//   error: string | undefined;
-// }
 
 export enum DataStatus {
   IDLE = "idle",

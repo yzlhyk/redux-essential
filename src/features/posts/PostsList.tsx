@@ -1,30 +1,14 @@
-import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
-import { RootState } from "../../app/store";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { PostAuthor } from "./PostAuthor";
-import {
-  DataStatus,
-  fetchPosts,
-  Post,
-  selectAllPosts,
-  selectPostIds,
-  selectPostById,
-} from "./postsSlice";
+import { Post } from "./postsSlice";
 import { ReactionButtons } from "./ReactionButtons";
-
 import { useGetPostsQuery } from "../api/apiSlice";
 import { TimeAgo } from "./TimeAgo";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Spinner } from "../../components/Spinner";
-import { EntityId } from "@reduxjs/toolkit";
-import { fetchUsers } from "../users/usersSlice";
+import classnames from "classnames";
 
-let PostExerpt = ({ postId }: { postId: EntityId }) => {
-  const post = useAppSelector((state: RootState) =>
-    selectPostById(state, postId)
-  );
-
+let PostExerpt = ({ post }: { post: Post }) => {
   if (!post) {
     return <div>Invalid Post</div>;
   }
@@ -47,36 +31,46 @@ let PostExerpt = ({ postId }: { postId: EntityId }) => {
 };
 
 const PostsList = () => {
-  const dispatch = useAppDispatch();
-  const orderedPostsIds = useAppSelector(selectPostIds);
-  // const {data:posts, isLoading, isSuccess, isError, error} = useGetPostsQuery();
+  const {
+    data: posts = [],
+    isLoading,
+    isFetching,
+    isSuccess,
+    isError,
+    error,
+    refetch
+  } = useGetPostsQuery();
 
-  const postStatus = useAppSelector((state: RootState) => state.posts.status);
-  const error = useAppSelector((state: RootState) => state.posts.error);
+  console.log("posts: ", posts);
 
-  useEffect(() => {
-    if (postStatus === DataStatus.IDLE) {
-      dispatch(fetchPosts());
-      dispatch(fetchUsers());
-      console.log("fetched posts");
-    }
-  }, [postStatus, dispatch]);
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts.slice();
+    sortedPosts.sort((a, b) => b.date.localeCompare(a.date));
+    return sortedPosts;
+  }, [posts]);
 
   let content;
 
-  if (postStatus === DataStatus.LOADING) {
+  if (isLoading) {
     content = <Spinner text="Loading..." />;
-  } else if (postStatus === DataStatus.SUCCEEDED) {
-    content = orderedPostsIds.map((postId: EntityId) => (
-      <PostExerpt key={postId} postId={postId} />
-    ));
-  } else if (postStatus === DataStatus.FAILED) {
-    content = <div>{error}</div>;
+  } else if (isSuccess) {
+    const renderedPosts = sortedPosts.map((post:Post) => (
+      <PostExerpt key={post.id} post={post} />
+    ))
+
+    const containerClassnames = classnames('posts-container', {
+      disabled: isFetching
+    })
+
+    content = <div className={containerClassnames}>{renderedPosts}</div>;
+  } else if (isError) {
+    content = <div>{error.toString()}</div>;
   }
 
   return (
     <section className="posts-list">
       <h2>Posts</h2>
+      <button onClick={refetch}>Refetch Posts</button>
       {content}
     </section>
   );

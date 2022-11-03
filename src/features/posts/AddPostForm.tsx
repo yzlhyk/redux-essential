@@ -1,22 +1,22 @@
 import { ChangeEvent, useState } from "react";
 import { nanoid } from "@reduxjs/toolkit";
-
-import { addNewPost, DataStatus } from "./postsSlice";
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-import { selectAllUsers, User } from "../users/usersSlice";
+import { User } from "../users/usersSlice";
 import { sub } from "date-fns";
+import { useAddNewPostMutation, useGetUsersQuery } from "../api/apiSlice";
 
 export const AddPostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [userId, setUserId] = useState("");
-  const [addRequestStatus, setAddRequestStatus] = useState(DataStatus.IDLE);
 
-  const dispatch = useAppDispatch();
-
-  const users = useAppSelector(selectAllUsers);
+  const [addNewPost, { isLoading: isPostLoading }] = useAddNewPostMutation();
+  const {
+    data: users,
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useGetUsersQuery();
 
   const onTitleChanged = (e: ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
@@ -25,14 +25,11 @@ export const AddPostForm = () => {
   const onAuthorChanged = (e: ChangeEvent<HTMLSelectElement>) =>
     setUserId(e.target.value);
 
-  const canSave =
-    [title, content, userId].every(Boolean) &&
-    addRequestStatus === DataStatus.IDLE;
+  const canSave = [title, content, userId].every(Boolean) && !isPostLoading;
 
   const onSavePostClicked = async () => {
     if (canSave) {
       try {
-        setAddRequestStatus(DataStatus.LOADING);
         const date = sub(new Date(), { minutes: 5 }).toISOString();
         const reactionsCount = {
           thumbsUp: 0,
@@ -41,25 +38,38 @@ export const AddPostForm = () => {
           rocket: 0,
           eyes: 0,
         };
-        await dispatch(
-          addNewPost({ title, content, user: userId, date, reactionsCount })
-        ).unwrap();
+        const id = nanoid();
+        await addNewPost({
+          id,
+          title,
+          content,
+          user: userId,
+          date,
+          reactionsCount,
+        }).unwrap();
         setTitle("");
         setContent("");
         setUserId("");
       } catch (err) {
         console.error("Failed to save the post: ", err);
-      } finally {
-        setAddRequestStatus(DataStatus.IDLE);
       }
     }
   };
 
-  const usersOptions = users.map((user: User) => (
-    <option value={user.id} key={user.id}>
-      {user.name}
-    </option>
-  ));
+  let usersOptions;
+
+  if (isLoading) {
+    usersOptions = "no user";
+  } else if (isSuccess) {
+    usersOptions = users.map((user: User) => (
+      <option value={user.id} key={user.id}>
+        {user.name}
+      </option>
+    ));
+  } else if (isError) {
+    usersOptions = <div>{error.toString()}</div>;
+  }
+
   return (
     <section>
       <h2>Add a New Post</h2>

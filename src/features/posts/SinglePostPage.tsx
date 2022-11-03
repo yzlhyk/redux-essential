@@ -1,36 +1,43 @@
-import React from "react";
 import { useParams, Link } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
-import { RootState } from "../../app/store";
 import { PostAuthor } from "./PostAuthor";
-import { Post, selectPostById } from "./postsSlice";
 import { ReactionButtons } from "./ReactionButtons";
+import { Spinner } from "../../components/Spinner";
+import { useGetPostQuery } from "../api/apiSlice";
+import { TimeAgo } from "./TimeAgo";
 
 export const SinglePostPage = () => {
   const { postId } = useParams();
 
-  const post = useAppSelector((state:RootState)=>selectPostById(state, postId!));
+  const { data: post, isFetching, isSuccess } = useGetPostQuery(postId!);
 
-    
-  if (!post) {
-      return (
-        <section>
-        <h2>Post not Found!</h2>
-      </section>
-    );
-  }
-  console.log("single post page", postId);
-  return (
-    <section>
+  let content;
+
+  if (isFetching) {
+    content = <Spinner text="Loading..." />;
+  } else if (isSuccess) {
+    content = (
       <article className="post">
         <h2>{post.title}</h2>
-        <PostAuthor userId={post.user} />
+        <div>
+          <PostAuthor userId={post.user} />
+          <TimeAgo timestamp={post.date} />
+        </div>
         <p className="post-content">{post.content}</p>
         <ReactionButtons post={post} />
         <Link to={`/editPost/${post.id}`} className="button">
           Edit Post
         </Link>
       </article>
-    </section>
-  );
+    );
+  }
+
+  if (!post) {
+    return (
+      <section>
+        <h2>Post not Found!</h2>
+      </section>
+    );
+  }
+  console.log("single post page", postId);
+  return <section>{content}</section>;
 };
